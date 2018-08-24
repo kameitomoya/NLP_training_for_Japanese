@@ -1,0 +1,2 @@
+class ScrapeTwitter(object):
+    pass

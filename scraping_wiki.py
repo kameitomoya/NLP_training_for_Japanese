@@ -50,5 +50,5 @@ class ScrapingWiki:
         print("総文章数は{}です。".format(sentence_num))
         os.chdir(self.output_dir)
         df_result.to_csv("wikiデータ.csv", encoding="utf-8")
-        df_result.sample(100).to_csv("wikiデータ_sample.csv", encoding="utf-16", sep=" ")
+        df_result.sample(100).to_csv("wikiデータ_sample.csv", encoding="utf-8")
         return df_result

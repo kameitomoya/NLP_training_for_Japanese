@@ -5,6 +5,7 @@ import MeCab
 import os
 import time
 
+
 class GenismWord2vec:
     def __init__(self, data_dir, output_dir):
         self.data_dir = data_dir

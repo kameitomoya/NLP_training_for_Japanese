@@ -3,6 +3,7 @@ import logging
 from tqdm import tqdm
 import MeCab
 import os
+import sys
 import time
 
 
@@ -74,14 +75,28 @@ class GenismWord2vec:
 
 
 if __name__=="__main__":
-    print("process is initializing.....")
-    start = time.time()
-    data_dir = r"/home/tomoya/Downloads/articles/AA/wiki_00"
-    output_dir = r"/home/tomoya/Downloads/temp_data"
-    model = GenismWord2vec(data_dir=data_dir, output_dir=output_dir)
-    model.make_data(new_data_path=r"/home/tomoya/Downloads/temp_data/wiki_00_data.txt")
-    model.wakati()
-    model.model()
-    model.similarity("ローマ")
-    process_time = time.time() - start
-    print("finished all processes, it takes {}seconds".format(process_time))
+    if sys.argv[1] == "--train":
+        print("process is initializing.....")
+        start = time.time()
+        data_dir = r"/home/tomoya/Downloads/articles/AA/wiki_00"
+        output_dir = r"/home/tomoya/Downloads/temp_data"
+        model = GenismWord2vec(data_dir=data_dir, output_dir=output_dir)
+        model.make_data(new_data_path=r"/home/tomoya/Downloads/temp_data/wiki_00_data.txt")
+        model.wakati()
+        model.model()
+        model.similarity("ローマ")
+        process_time = time.time() - start
+        print("finished all processes, it takes {}seconds".format(process_time))
+
+    elif (sys.argv[1] == "--eval")and(isinstance(sys.argv[2], str)):
+        print("process is initializing.....")
+        start = time.time()
+        data_dir = r"/home/tomoya/Downloads/articles/AA/wiki_00"
+        output_dir = r"/home/tomoya/Downloads/temp_data"
+        model = GenismWord2vec(data_dir=data_dir, output_dir=output_dir)
+        model.similarity(sys.argv[2])
+        process_time = time.time() - start
+        print("finished all processes, it takes {}seconds".format(process_time))
+
+    else:
+        raise ValueError("""please confirm your arguments""")

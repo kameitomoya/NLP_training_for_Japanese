@@ -141,10 +141,12 @@ class TensorCBOW:
             pickle.dump(data, f)
         print("文章のone-hot化を正常に終了しました。\n出力先:{}\n".format(self.word_to_number_data_dir))
 
-    def generate_batch_data(self, sentences):
+    def generate_batch_data(self):
         # TODO 各文に対して、ウィンドウサイズ以上の単語数が存在するかどうかを確認する。
-        # 単語間に空白のあるデータの読み込み
-        sentences = open(self.transformed_data_path, "r")
+        # 数字化したデータの取得
+        with open(self.word_to_number_data_dir, "rb") as f:
+            sentences = pickle.load(f)
+
         batch_data = []
         label_data = []
         # バッチサイズに達するまで処理を続ける。
@@ -164,8 +166,9 @@ class TensorCBOW:
             batch_and_labels = [(x, y) for x, y in batch_and_labels if len(x) == 2 * self.window_size]
             # ターゲットとコンテキストを個々に分割する。
             batch, labels = [list(x) for x in zip(*batch_and_labels)]
-            batch_data.extend(batch[:batch_data])
-            label_data.extend(labels[:batch_data])
+            batch_data.extend(batch[:self.batch_size])
+            label_data.extend(labels[:self.batch_size])
+
         # バッチデータとして保存する。
         batch_data = batch_data[: self.batch_size]
         label_data = label_data[: self.batch_size]
@@ -175,9 +178,15 @@ class TensorCBOW:
         return batch_data, label_data
 
     def make_model(self):
+        print("モデルの学習を始めます......")
+        # テキストデータの読み込み
         text_data = open(self.transformed_data_path, "r")
+        # ディクショナリデータの読み込み
         with open(self.words_dict_dir, "rb") as f:
             word_dictionary = pickle.load(f)
+        # vocabulary_sizeの更新
+        self.vocabulary_size = len(word_dictionary)
+        # Tensorflowセッションの開始
         with tf.Session() as sess:
             # TODO 初期値においてHeの初期値を導入する必要があるのではないか。
             # 単語埋め込みの設定
@@ -203,20 +212,43 @@ class TensorCBOW:
                                                  num_sampled=self.negative_sample,
                                                  num_classes=self.vocabulary_size))
             optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.model_learning_rate).minimize(loss)
-
-            self.make_model()
             init = tf.global_variables_initializer()
-            sess.init(init)
+            sess.run(init)
 
             for i in range(self.generations):
-                batch_inputs, batch_labels = self.generate_batch_data(text_data)
+                # 学習の開始
+                batch_inputs, batch_labels = self.generate_batch_data()
                 feed_dict = {x_inputs: batch_inputs, y_target: batch_labels}
                 sess.run(optimizer, feed_dict=feed_dict)
 
-                if (i + 1) % self.save_embeddings_every == 0:
-                    with open(os.path.join(self.output_dir, "movie_vocab.pkl"), "wb") as f:
+                # 損失関数の評価
+                if not (i+1) % self.print_loss_every:
+                    loss_val = sess.run(loss, feed_dict=feed_dict)
+                    print("Loss at step {} : {}".format(i+1, loss_val))
+
+                # ディクショナリと埋め込みを保存
+                if not (i + 1) % self.save_embeddings_every:
+                    print("Save dictionary and embedding_vec: {}".format(self.output_dir))
+                    with open(os.path.join(self.output_dir, "train_movie_vocab.pickle"), "wb") as f:
                         pickle.dump(word_dictionary, f)
 
                     # 埋め込みベクトルの保存
-                    model_checkpoint_path = os.path.join(self.output_dir, "cbow_movie_embedding.ckpt")
-                    save_path = saver.save(sess, model_checkpoint_path)
+                    model_checkpoint_path = os.path.join(self.output_dir, "train_cbow_movie_embedding.ckpt")
+                    saver.save(sess, model_checkpoint_path)
+
+            # 最終的な埋め込みベクトルの保存
+            model_checkpoint_path = os.path.join(self.output_dir, "final_cbow_movie_embedding.ckpt")
+            save_path = saver.save(sess, model_checkpoint_path)
+
+        print("モデルの学習を正常に終了しました。\t{}".format(save_path))
+
+    def use_embedding_vec(self, word):
+        print("埋め込みベクトルの解析を始めます。")
+        
+        print("埋め込みベクトルの解析を終わります。")
+        pass
+
+    def plot_by_tsne(self):
+        print("t-SNEによる埋め込みベクトルのプロットを始めます。")
+        print("t-SNE")
+        pass

@@ -45,6 +45,8 @@ class TensorCBOW:
         self.word_to_number_data_dir = os.path.join(self.output_dir, "word_to_number_data.pickle")
         # 入力ファイルのデータを指定する。
         self.data_path = data_path
+        # モデルの埋め込みベクトルを自動的に指定する。
+        self.model_checkpoint_path = os.path.join(self.output_dir, "final_cbow_movie_embedding.ckpt")
 
     def load_data_html(self):
         print("データの読み込みを開始します......")
@@ -142,7 +144,6 @@ class TensorCBOW:
         print("文章のone-hot化を正常に終了しました。\n出力先:{}\n".format(self.word_to_number_data_dir))
 
     def generate_batch_data(self):
-        # TODO 各文に対して、ウィンドウサイズ以上の単語数が存在するかどうかを確認する。
         # 数字化したデータの取得
         with open(self.word_to_number_data_dir, "rb") as f:
             sentences = pickle.load(f)
@@ -237,14 +238,17 @@ class TensorCBOW:
                     saver.save(sess, model_checkpoint_path)
 
             # 最終的な埋め込みベクトルの保存
-            model_checkpoint_path = os.path.join(self.output_dir, "final_cbow_movie_embedding.ckpt")
+            model_checkpoint_path = self.model_checkpoint_path
             save_path = saver.save(sess, model_checkpoint_path)
 
         print("モデルの学習を正常に終了しました。\t{}".format(save_path))
 
     def use_embedding_vec(self, word):
         print("埋め込みベクトルの解析を始めます。")
-        
+        with tf.Session() as sess:
+            saver = tf.train.Saver()
+            saver.restore(sess, self.model_checkpoint_path)
+        # 単語ベクトルの検索
         print("埋め込みベクトルの解析を終わります。")
         pass
 

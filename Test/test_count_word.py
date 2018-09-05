@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import preprocess_nlp
+from preprocess_NLP import preprocess_nlp
 
 print("関数count_wordのテストを始めます.....")
 

@@ -4,7 +4,8 @@ import re
 import numpy as np
 import pandas as pd
 import MeCab as mc
-import config
+from preprocess_NLP import config
+
 
 ## TODO すべてデータベースに格納するように工夫する。
 

@@ -7,7 +7,7 @@ import sys
 import time
 
 
-class GenismWord2vec:
+class GensimWord2vec:
     def __init__(self, data_dir, output_dir):
         self.data_dir = data_dir
         self.output_dir = output_dir
@@ -80,7 +80,7 @@ if __name__=="__main__":
         start = time.time()
         data_dir = r"/home/tomoya/Downloads/articles/AA/wiki_00"
         output_dir = r"/home/tomoya/Downloads/temp_data"
-        model = GenismWord2vec(data_dir=data_dir, output_dir=output_dir)
+        model = GensimWord2vec(data_dir=data_dir, output_dir=output_dir)
         model.make_data(new_data_path=r"/home/tomoya/Downloads/temp_data/wiki_00_data.txt")
         model.wakati()
         model.model()
@@ -93,7 +93,7 @@ if __name__=="__main__":
         start = time.time()
         data_dir = r"/home/tomoya/Downloads/articles/AA/wiki_00"
         output_dir = r"/home/tomoya/Downloads/temp_data"
-        model = GenismWord2vec(data_dir=data_dir, output_dir=output_dir)
+        model = GensimWord2vec(data_dir=data_dir, output_dir=output_dir)
         model.similarity(sys.argv[2])
         process_time = time.time() - start
         print("finished all processes, it takes {}seconds".format(process_time))

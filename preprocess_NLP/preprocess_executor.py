@@ -1,10 +1,7 @@
 import sys
 import os
 import pandas as pd
-import preprocess_nlp
-import scraping_wiki as scraping_wiki
-import scraping_twitter as scraping_twitter
-
+from preprocess_NLP import preprocess_nlp, scraping_twitter as scraping_twitter, scraping_wiki as scraping_wiki
 
 print("処理を開始します。")
 try:

@@ -98,9 +98,24 @@ class GensimDoc2vec(GensimWord2vec):
                                                                                    self.norm_data_dir))
 
     def model(self):
-        author_list = []
-        documents = [[TaggedDocument(words=sentence.split(), tags=author) for sentence in open(data, "r")] for
-                     author, data in zip(author_list, os.listdir(self.wakati_data_dir))]
+        def get_author(path):
+            author_list = []
+            data_list = os.listdir(path)
+            for i, data in enumerate(data_list):
+                fi_name = os.path.join(self.wakati_data_dir, data)
+                fi = open(fi_name, "r")
+                for j, sentence in enumerate(fi.readlines()):
+                    if j == 1:
+                        author_list.append(sentence)
+                        print(sentence, sep=", ")
+                        break
+            return author_list
+
+        def mk_documents(path):
+            pass
+
+        author_list = get_author(self.wakati_data_dir)
+        documents = []
         model = Doc2Vec(documents=documents, dm=1, size=300, window=10, min_count=10, workers=5)
         model.save(self.output_dir)
 

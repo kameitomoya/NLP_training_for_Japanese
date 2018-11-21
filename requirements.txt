@@ -1,3 +1,7 @@
+lxml
+urlextract
+readability
+pymongo
 absl-py==0.4.0
 astor==0.7.1
 beautifulsoup4==4.6.3
